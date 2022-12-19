@@ -1,6 +1,7 @@
 #암종류별 성별 분석
 install.packages("dplyr")
 library(dplyr)
+#라이브러리에 올려놓지 않으면 %>% 사용 못함
 
 #데이터 불러오기(암발생자수)
 setwd("C:/RworkProject")
@@ -16,14 +17,14 @@ names(df1)
 # 데이터셋 조회
 # 1) 특정 변수 조회
 t1 <- df1$암종별
-class(t1)
-mode(t1)
+class(t1) #character
+mode(t1)  #character
 is.vector(t1)
 
 # 2) 특정 열명을 사용하여 조회(1번과는 결과의 데이터 타입이 다름)
 t2 <- df1['암종별']
-class(t2)
-mode(t2)
+class(t2) #data.frame
+mode(t2)  #list
 
 # 3) 특정 행 조회 :1행 조회
 df1[1,]
@@ -37,15 +38,13 @@ head(df)
 # 암종류 확인
 unique(df$암종별)
 
-
-
 # 5) 특정행 열 조회
 df[1:3, c('암종별','발생자수')]
 
 # 열 데이터 타입 확인
 str(df)
 
-# 값 변경 : - => 0
+# 값 변경 : - => 0 (na를 - 로 표시함)
 df$발생자수 <- ifelse(df$발생자수 == "-", 0, df$발생자수)
 df$조발생률 <- ifelse(df$조발생률 == "-", 0, df$조발생률)
 df
@@ -54,10 +53,9 @@ df$발생자수 <- as.numeric(df$발생자수)
 df$조발생률 <- as.numeric(df$조발생률)
 str(df)
 
-# 모든암 제거하고 연령별이 계인 데이터 
+# 모든암 제거하고 연령별 개인 데이터 
 # 모든 암 제거
-df2 <- df %>% filter(암종별 != "모든 암(C00-C96)") %>%
-  filter(연령별 == "계")
+df2 <- df %>% filter(암종별 != "모든 암(C00-C96)") %>% filter(연령별 == "계")
 df2
 df21 <- df2 %>% filter(성별 == "계")
 df22 <- df2 %>% filter(성별 != "계")
@@ -82,7 +80,8 @@ ggplot(mapping =aes(x=암종별, y=발생자수, fill=성별), data=df22) +
   theme(plot.title = element_text(hjust = 0.5,size=20,face='bold'),
         axis.text.x = element_text(angle = 90, hjust=1))
 
-# hjust=1 90도 회전 텍스트 한쪽 정렬(0=아래쪽, 1=위쪽)
+#axis.text.x = element_text(angle = 90, hjust=1) 텍스트 90도 회전 및 한쪽 정렬
+# hjust=1 텍스트 한쪽 정렬(0=아래쪽, 1=위쪽)
 
 ggplot(mapping =aes(x=성별, y=발생자수), data=df22) +
   geom_bar(stat="identity", position=position_dodge()) +
